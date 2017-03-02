@@ -25,8 +25,8 @@ Now this is a perfectly valid method for storing information, right? But now let
 
 ```javascript
 function renderNumber(number) {
-	// Assuming that our HTML contains the 'numberView' element
-	document.getElementById('numberView').innerHTML = number;
+  // Assuming that our HTML contains the 'numberView' element
+  document.getElementById('numberView').innerHTML = number;
 }
 ```
 
@@ -59,8 +59,8 @@ So there's a very obvious way to refactor this code to make it a bit cleaner, we
 var state = { num: 0 };
 
 function updateNumber(newNumber) {
-	state.num = newNumber;
-	renderNumber(state.num);
+  state.num = newNumber;
+  renderNumber(state.num);
 }
 
 // Calling this function will in turn re-render the number
@@ -78,8 +78,8 @@ In fact, we can refactor to make a generic function that updates any property in
 var state = { num: 0 };
 
 function updateState(property, newValue) {
-	state[property] = newValue;
-	renderNumber(state.num);
+  state[property] = newValue;
+  renderNumber(state.num);
 }
 
 updateState('num', state.num + 3);
@@ -97,19 +97,19 @@ var state = { num: 0 };
 var listeners = [];
 
 function updateState(property, newValue) {
-	state[property] = newValue;
-	listeners.forEach(function(listener) {
-		listener();
-	});
+  state[property] = newValue;
+  listeners.forEach(function(listener) {
+    listener();
+  });
 }
 
 function subscribeToState(listener) {
-	listeners.push(listener);
+  listeners.push(listener);
 }
 
 subscribeToState(renderNumber);
 subscribeToState(function() {
-	console.log("Our state updated!");
+  console.log("Our state updated!");
 });
 
 updateState('num', state.num + 3);
@@ -131,29 +131,29 @@ var state = { num: 0, name: '', age: null };
 var listeners = [];
 
 function updateState(stateModifier) {
-	state = stateModifier(state);
-	listeners.forEach(function(listener) {
-		listener();
-	});
+  state = stateModifier(state);
+  listeners.forEach(function(listener) {
+    listener();
+  });
 }
 
 function subscribeToState(listener) {
-	listeners.push(listener);
+  listeners.push(listener);
 }
 
 // The process for updating the num property
 updateState(function(oldState) {
-	return Object.assign({}, oldState, {
-	  num: state.num + 3
-	});
+  return Object.assign({}, oldState, {
+    num: state.num + 3
+  });
 });
 
 // The process for updating a user's bio information
 updateState(function(oldState) {
-	return Object.assign({}, oldState, {
-		name: 'Zak',
-		age: 17
-	});
+  return Object.assign({}, oldState, {
+    name: 'Zak',
+    age: 17
+  });
 });
 
 console.log(state); // { num: 3, name: 'Zak', age: 17 }
@@ -176,12 +176,12 @@ So you might be thinking we could just make functions that update specific thing
 
 ```javascript
 function updateBio(name, age) {
-	updateState(function(oldState) {
-		return Object.assign({}, oldState, {
-			name: name,
-			age: age
-		});
-	});
+  updateState(function(oldState) {
+    return Object.assign({}, oldState, {
+      name: name,
+      age: age
+    });
+  });
 }
 
 updateBio('Zak', 17); // Cool! It's kinda declarative!
@@ -202,32 +202,32 @@ var state = { num: 0, name: '', age: null };
 var listeners = [];
 
 function stateModifier(oldState, action) {
-	if(action.type === 'UPDATE_BIO') {
-		// Basically identical to the above version's Object.assign syntax
-		return Object.assign({}, oldState, {
-			name: action.name,
-			age: action.age
-		});
-	}
-	if(action.type === 'INCREMENT_NUM') {
-		return Object.assign({}, oldState, {
-			num: action.incrementer
-		});
-	}
+  if(action.type === 'UPDATE_BIO') {
+    // Basically identical to the above version's Object.assign syntax
+    return Object.assign({}, oldState, {
+      name: action.name,
+      age: action.age
+    });
+  }
+  if(action.type === 'INCREMENT_NUM') {
+    return Object.assign({}, oldState, {
+      num: action.incrementer
+    });
+  }
 
-	// If we don't get a match on any of our action types, we just return the existing state
-	return oldState;
+  // If we don't get a match on any of our action types, we just return the existing state
+  return oldState;
 }
 
 function updateState(action) {
-	state = stateModifier(state, action);
-	listeners.forEach(function(listener) {
-		listener();
-	});
+  state = stateModifier(state, action);
+  listeners.forEach(function(listener) {
+    listener();
+  });
 }
 
 function subscribeToState(listener) {
-	listeners.push(listener);
+  listeners.push(listener);
 }
 
 // The process for updating the num property
@@ -245,47 +245,47 @@ Dang, that's a lot of code. Let's refactor this into a class we can use to make 
 // function renderBio() { ... }
 
 function createStore(reducer, initialState) {
-	var state = initialState;
-	var listeners = [];
+  var state = initialState;
+  var listeners = [];
 
-	// Function used for dispatching actions that will then be processed by our stateModifier function
-	function dispatchAction(action) {
-		state = reducer(state, action);
-		listeners.forEach(function(listener) {
-			listener();
-		})
-	}
+  // Function used for dispatching actions that will then be processed by our stateModifier function
+  function dispatchAction(action) {
+    state = reducer(state, action);
+    listeners.forEach(function(listener) {
+      listener();
+    })
+  }
 
-	// This used to be called subscribeToState, the function that adds state listening functions to our listeners array
-	function subscribe(callback) {
-		listeners.push(callback);
-	}
+  // This used to be called subscribeToState, the function that adds state listening functions to our listeners array
+  function subscribe(callback) {
+    listeners.push(callback);
+  }
 
-	// Because of closure, we can't access state anymore unless we have a function that returns the state for us
-	function getState() {
-		return state;
-	}
+  // Because of closure, we can't access state anymore unless we have a function that returns the state for us
+  function getState() {
+    return state;
+  }
 
-	return {
-		dispatchAction: dispatchAction,
-		subscribe: subscribe,
-		getState: getState
-	};
+  return {
+    dispatchAction: dispatchAction,
+    subscribe: subscribe,
+    getState: getState
+  };
 }
 
 function myReducer(oldState, action) {
-	if(action.type === 'UPDATE_BIO') {
-		return Object.assign({}, oldState, {
-			name: action.name,
-			age: action.age
-		});
-	}
-	if(action.type === 'INCREMENT_NUM') {
-		return Object.assign({}, oldState, {
-			num: action.incrementer
-		});
-	}
-	return oldState;
+  if(action.type === 'UPDATE_BIO') {
+    return Object.assign({}, oldState, {
+      name: action.name,
+      age: action.age
+    });
+  }
+  if(action.type === 'INCREMENT_NUM') {
+    return Object.assign({}, oldState, {
+      num: action.incrementer
+    });
+  }
+  return oldState;
 }
 
 // Instantiate a new store (our state manager)
@@ -294,7 +294,7 @@ var store = createStore(myReducer, {});
 
 // Add a listener using the subscribe method
 store.subscribe(function() {
-	console.log("Our state just updated!");
+  console.log("Our state just updated!");
 });
 
 // We can add as many listeners as we want, such as this hypothetical one that will rerender the bio anytime the state is updated
