@@ -22,4 +22,4 @@ To run the number_counter demo, run this:
 That should do it.
 
 ## Chapters
-1. Redux Concepts: Managing Application State
+1. [Redux Concepts: Managing Application State](https://github.com/zakarhino/redux-basics/blob/master/Part%20I/reading/Chapter%201%20-%20Redux%20Concepts.md)
