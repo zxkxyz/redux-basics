@@ -1,0 +1,26 @@
+{
+  "name": "redux-basics",
+  "version": "1.0.0",
+  "description": "A simple repo explaining the basics of redux",
+  "main": "index.js",
+  "scripts": {
+    "number_counter": "node Part\\ I/examples/number_counter/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zakarhino/redux-basics.git"
+  },
+  "keywords": [
+    "Redux"
+  ],
+  "author": "Zak Golding <zak@0x7cf.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zakarhino/redux-basics/issues"
+  },
+  "homepage": "https://github.com/zakarhino/redux-basics#readme",
+  "dependencies": {
+    "redux": "^3.6.0"
+  }
+}
