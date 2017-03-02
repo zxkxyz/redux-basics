@@ -88,25 +88,33 @@ updateState('num', state.num - 2);
 console.log(state.num) // 1
 ```
 
-There's another glaring issue with this code though, we've hardcoded calling the `renderNumber` method in our updateState function. However we can't predict what other functions and re-renders we might need to perform in addition to re-rendering the  numberView element. Ideally what we want is for us to dynamically control which functions should be invoked whenever our state updates. So, we can implement an array of functions to invoke whenever state updates:
+There's another glaring issue with this code though, we've hardcoded the invocation of the `renderNumber` method into our updateState function. What that means for us is that at the moment we can't dynamically* control which functions should be invoked whenever our state updates. 
+
+*By dynamically I mean we want to have tools accessible to us in our state manager such that during the lifecycle of our application I can keep adding in new functions to invoke on state change. We can call these methods 'subscribers.'
+
+One proposal for doing this would be to introduce an array that will contain references to every function we wish to invoke on state change:
 
 ```javascript
 // function renderNumber() { ... }
 
 var state = { num: 0 };
+// This array is going to hold all of the subscriber functions
 var listeners = [];
 
 function updateState(property, newValue) {
   state[property] = newValue;
+  // Invoke each listener in the listeners array whenever updateState is invoked
   listeners.forEach(function(listener) {
     listener();
   });
 }
 
+// Simply pushes a subscriber function to our listeners array
 function subscribeToState(listener) {
   listeners.push(listener);
 }
 
+// Adds the renderNumber function to our listeners array
 subscribeToState(renderNumber);
 subscribeToState(function() {
   console.log("Our state updated!");
@@ -120,7 +128,9 @@ console.log(state.num) // 1
 
 In the above example, whenever I trigger the updateState function, I'm also triggering the `renderNumber` function and an anonymous function I declared that just logs "Our state updated!" (it should log twice above) whenever our state updates.
 
-If you're thinking about eventing systems right now, you're on the right track. Essentially what we've just done is introduce a basic eventing system into our state manager. I.e, whenever we update state we're triggering an event that has listeners associated with it. At this point in our state manager, we're in a position to add as many listeners as we want. Any time we want to perform some function when the state updates, we just add that function to our `listeners` array using our `subscribeToState` function and we're all good.
+You might be thinking this system is very similar to a basic eventing system -- you're correct! Essentially what we've just done is introduce a basic eventing system into our state manager such that whenever we call the updateState method it's almost as if we were triggering some kind of 'state change' event that our subscriber functions are listening to.
+
+At this point in our state manager, we're in a position to add as many listeners as we want. Any time we want to perform some function when the state updates, we just add that function to our `listeners` array using our `subscribeToState` function and we're all good.
 
 There's a few more changes we're going to make though. At the moment our `updateState` function is hardcoded to just replace a property in our state. This is problematic because we're really limited in how we can update our state. For example, the current `updateState` method is only designed to change a single property in our state. What if we wanted to change multiple properties at once? Or maybe we don't even want to update a property at all, maybe we want to delete a property from our state? At the moment this just isn't possible because we've hardcoded the behavior of updating the state. Ideally we'd want our developer to choose exactly how to modify the state of our app given certain situations.
 
